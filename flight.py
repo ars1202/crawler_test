@@ -3,50 +3,63 @@ from selenium import webdriver
 from selenium.webdriver.common.by import By
 from selenium.webdriver.support.ui import WebDriverWait
 from selenium.webdriver.common.keys import Keys
-
-
+from selenium.webdriver.chrome.options import Options
+import re
+chrome_options = Options()
+#chrome_options.add_argument("--headless=new")
+driver = webdriver.Chrome(options=chrome_options)
+driver.get("https://www.google.com/travel/flights")
+wait = WebDriverWait(driver,10,poll_frequency=1)
 class Flight_search:
+    
+    def input_data(code,text,find):
+
+        if find=="xpath":
+            wait.until(lambda d:driver.find_element(By.XPATH,code).is_displayed())
+            tmp = driver.find_element(By.XPATH,code)
+        elif find=="class":
+            wait.until(lambda d:driver.find_element(By.CLASS_NAME,code).is_displayed())
+            tmp = driver.find_element(By.CLASS_NAME,code)
         
+        tmp.clear()
+        tmp.send_keys(text)
+        return tmp
+
+    def click_button(code,find):
+        if find=="xpath":
+            wait.until(lambda d:driver.find_element(By.XPATH,code).is_displayed())
+            button = driver.find_element(By.XPATH,code)
+        elif find=="class":
+            wait.until(lambda d:driver.find_element(By.CLASS_NAME,code).is_displayed())
+            button = driver.find_element(By.CLASS_NAME,code)            
+        button.click()
+        return button        
         #driver.implicitly_wait(10)
     def search(self,start,dest,go,back):
-        driver = webdriver.Chrome("")
-        driver.get("https://www.google.com/travel/flights")
-        wait = WebDriverWait(driver,10,poll_frequency=1)
+        
+        Flight_search.input_data("//input[@aria-label='從哪裡出發？']",start,"xpath")
 
-        self.start = driver.find_element(By.XPATH,"//input[@aria-label='從哪裡出發？']")
-        self.start.clear()
-        self.start.send_keys(start)
+        Flight_search.click_button("//*[@id='c2']/div[2]/div[1]","xpath")
 
-        wait.until(lambda d:driver.find_element(By.XPATH,"//*[@id='c2']/div[2]/div[1]").is_displayed())
-        c = driver.find_element(By.XPATH,"//*[@id='c2']/div[2]/div[1]")
-        c.click()
+        Flight_search.input_data("//input[@aria-label='要去哪裡？ ']",dest,"xpath")
 
-        self.destination = driver.find_element(By.XPATH,"//input[@aria-label='要去哪裡？ ']")
-        self.destination.send_keys(dest)
+        Flight_search.click_button("//*[@id='c7']/div[2]/div[1]","xpath")        
 
-        wait.until(lambda d:driver.find_element(By.XPATH,"//*[@id='c7']/div[2]/div[1]").is_displayed())
-        c = driver.find_element(By.XPATH,"//*[@id='c7']/div[2]/div[1]")
-        c.click()        
-
-        wait.until(lambda d:driver.find_element(By.XPATH,"//input[@aria-label='去程']").is_displayed())
-        self.go = driver.find_element(By.XPATH,"//input[@aria-label='去程']")
-        self.go.send_keys(go)
+        self.go = Flight_search.input_data("//input[@aria-label='去程']",go,"xpath")
         self.go.send_keys("\ue007")
         time.sleep(2)
 
-        wait.until(lambda d:driver.find_element(By.XPATH,"//input[@aria-label='回程']").is_displayed())
-        self.back = driver.find_element(By.XPATH,"//input[@aria-label='回程']")
-        self.back.send_keys(back)
+        self.back = Flight_search.input_data("//input[@aria-label='回程']",back,"xpath")
         self.back.send_keys("\ue007")
         time.sleep(2)
 
-        wait.until(lambda d:driver.find_element(By.CLASS_NAME,"VfPpkd-LgbsSe.VfPpkd-LgbsSe-OWXEXe-k8QpJ.VfPpkd-LgbsSe-OWXEXe-Bz112c-M1Soyc.nCP5yc.AjY5Oe.LQeN7.TUT4y.zlyfOd").is_displayed())
-        search = driver.find_element(By.CLASS_NAME,"VfPpkd-LgbsSe.VfPpkd-LgbsSe-OWXEXe-k8QpJ.VfPpkd-LgbsSe-OWXEXe-Bz112c-M1Soyc.nCP5yc.AjY5Oe.LQeN7.TUT4y.zlyfOd")
-        search.click()
+        Flight_search.click_button("VfPpkd-LgbsSe.VfPpkd-LgbsSe-OWXEXe-k8QpJ.VfPpkd-LgbsSe-OWXEXe-Bz112c-M1Soyc.nCP5yc.AjY5Oe.LQeN7.TUT4y.zlyfOd","class")
 
+        Flight_search.click_button("JMc5Xc","class")
+        
         wait.until(lambda d:driver.find_element(By.CLASS_NAME,"JMc5Xc").is_displayed())
         result = driver.find_elements(By.CLASS_NAME,"JMc5Xc")
-        Flight_search.flight_extration(result,5)
+        Flight_search.flight_extration(result,10)
     
     def flight_extration(text,num):
         if len(text)>num:
@@ -54,4 +67,4 @@ class Flight_search:
         for i in range(len(text)):
             text[i] = text[i].get_attribute("aria-label")
         
-        print(text[0].split("。"))
+            print(text[i].split("。"))
