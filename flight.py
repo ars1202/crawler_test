@@ -35,15 +35,22 @@ class Flight_search:
         button.click()
         return button        
         #driver.implicitly_wait(10)
-    def search(self,start,dest,go,back):
+    def search(self,people,start,dest,go,back,):
         
-        Flight_search.input_data("//input[@aria-label='從哪裡出發？']",start,"xpath")
+        if(people>1):
+            Flight_search.click_button("//*[@id='yDmH0d']/c-wiz[2]/div/div[2]/c-wiz/div[1]/c-wiz/div[2]/div[1]/div[1]/div[1]/div/div[1]/div[2]/div/div[1]/div/button","xpath")
+            for i in range(1,people):
+                Flight_search.click_button("//*[@id='i9-1']/div/span[3]/button","xpath")
+            time.sleep(2)
+            Flight_search.click_button("/html/body/c-wiz[2]/div/div[2]/c-wiz/div[1]/c-wiz/div[2]/div[1]/div[1]/div[1]/div/div[1]/div[2]/div/div[2]/div[2]/button[1]","xpath")
 
-        Flight_search.click_button("//*[@id='c2']/div[2]/div[1]","xpath")
+        Flight_search.input_data("//*[@id='i21']/div[1]/div/div/div[1]/div/div/input",start,"xpath")
 
-        Flight_search.input_data("//input[@aria-label='要去哪裡？ ']",dest,"xpath")
+        Flight_search.click_button("//*[@id='c3']/div[2]/div[1]","xpath")
 
-        Flight_search.click_button("//*[@id='c7']/div[2]/div[1]","xpath")        
+        Flight_search.input_data("//*[@id='i21']/div[4]/div/div/div[1]/div/div/input",dest,"xpath")
+
+        Flight_search.click_button("//*[@id='c12']/div[2]/div[1]","xpath")        
 
         self.go = Flight_search.input_data("//input[@aria-label='去程']",go,"xpath")
         self.go.send_keys("\ue007")
@@ -54,17 +61,28 @@ class Flight_search:
         time.sleep(2)
 
         Flight_search.click_button("VfPpkd-LgbsSe.VfPpkd-LgbsSe-OWXEXe-k8QpJ.VfPpkd-LgbsSe-OWXEXe-Bz112c-M1Soyc.nCP5yc.AjY5Oe.LQeN7.TUT4y.zlyfOd","class")
-
-        Flight_search.click_button("JMc5Xc","class")
         
         wait.until(lambda d:driver.find_element(By.CLASS_NAME,"JMc5Xc").is_displayed())
         result = driver.find_elements(By.CLASS_NAME,"JMc5Xc")
-        Flight_search.flight_extration(result,10)
-    
+        data = Flight_search.flight_extration(result,10)
+        print(data)
+
+        #回程
+        Flight_search.click_button("//*[@id='yDmH0d']/c-wiz[2]/div/div[2]/c-wiz/div[1]/c-wiz/div[2]/div[2]/div[3]/ul/li[1]/div/div[2]/div/div[2]/div/div[3]/div","xpath")
+        wait.until(lambda d:driver.find_element(By.CLASS_NAME,"JMc5Xc").is_displayed())
+        result = driver.find_elements(By.CLASS_NAME,"JMc5Xc")
+        data = Flight_search.flight_extration(result,10)
+        print(data) 
+
     def flight_extration(text,num):
         if len(text)>num:
             text = text[0:num]
         for i in range(len(text)):
             text[i] = text[i].get_attribute("aria-label")
         
-            print(text[i].split("。"))
+        return text
+            #價格 航空 去回程時間地點 總時間 "選擇航班"
+            #價格 航空、轉成次數 去回程時間地點 總時間&第一次停留時間地點 第二次停留時間地點 "選擇航班"
+
+
+
