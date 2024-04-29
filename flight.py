@@ -79,10 +79,16 @@ class Flight_search:
             text = text[0:num]
         for i in range(len(text)):
             text[i] = text[i].get_attribute("aria-label")
-        
+            company = re.findall('搭乘\D+的',str(text[i]))
+            company = company[0][2:-1]
+            #print(text[i])
+            print(company)
+            text[i] = re.findall('\d+',str(text[i]))
+
         return text
             #價格 航空 去回程時間地點 總時間 "選擇航班"
             #價格 航空、轉成次數 去回程時間地點 總時間&第一次停留時間地點 第二次停留時間地點 "選擇航班"
+            #無轉機 11組數字 一轉機 16 二轉機 19
 
 
 
